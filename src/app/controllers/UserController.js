@@ -40,6 +40,43 @@ class UserController {
     }
 
     async login(req, res){
+        const {email, password} = req.body
+
+        try{
+            const user = await prisma.user.findUnique({
+            where:{email}
+            })
+
+            if(!user){
+                return res.status(404).json({message: "Usuário não encontrado"})
+            }
+
+            const passwordMatch = await bcrypt.compare(password, user.password)
+
+            if(!passwordMatch){
+                return res.status(401).json({message:"Usuário não encontrado" })
+            }
+
+            const {id} = user
+            const {name} = user
+
+             const token = jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: "7d"})
+
+            res.cookie("userToken", token, {
+                httpOnly:true, 
+                secure: false,
+                sameSite:"lax",
+                maxAge: 1000 * 60 * 60 * 24 * 7
+            })
+
+            return res.status(200).json({data:{name:name}})
+        }catch (err){
+            console.log("Erro ao fazer login...")
+        }
+
+    
+
+        
 
     }
 
