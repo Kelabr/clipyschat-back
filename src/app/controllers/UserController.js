@@ -1,5 +1,7 @@
 import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 import { PrismaClient } from "@prisma/client"
+import "dotenv/config"
 
 const prisma = new PrismaClient()
 
@@ -15,8 +17,19 @@ class UserController {
                 return res.status(409).json({message: "This email already exists."})
             }
 
-            await prisma.user.create({
+            const newUser = await prisma.user.create({
                 data:{name, email, date, password:passwordHash}
+            })
+
+            const {id} = newUser
+
+            const token = jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: "7d"})
+
+            res.cookie("userToken", token, {
+                httpOnly:true, 
+                secure: false,
+                sameSite:"lax",
+                maxAge: 1000 * 60 * 60 * 24 * 7
             })
 
             return res.status(201).json({message: `The user ${name} `})

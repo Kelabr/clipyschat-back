@@ -1,6 +1,7 @@
 import express from "express";
 import cors from 'cors';
 import routes from "./routes.js"
+import cookieParse from "cookie-parser"
 
 class App {
     constructor(){
@@ -11,7 +12,8 @@ class App {
 
     middlewares(){
         this.server.use(express.json());
-        this.server.use(cors());
+        this.server.use(cors({ origin: "http://localhost:3000", credentials: true}));
+        this.server.use(cookieParse())
     }
 
     router(){
