@@ -83,6 +83,23 @@ class UserController {
     async del(req, res){
 
     }
+
+
+    async me(req, res){
+        const token = req.cookies.userToken
+
+        try{
+            const payload = jwt.verify(token, process.env.JWT_SECRET)
+            const userId = payload.id
+            const user = await prisma.user.findUnique({
+                where:{id: userId}
+            })
+
+            return res.status(200).json({name:user.name})
+        }catch(erro){
+            console.log(`Error --- ${erro}`)
+        }
+    }
 }
 
 

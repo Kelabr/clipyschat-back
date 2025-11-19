@@ -6,6 +6,7 @@ const routes = Router();
 
 routes.post("/register", user.create)
 routes.post("/login", user.login)
+routes.get("/me", user.me)
 
 routes.get("/session", session.check)
 
