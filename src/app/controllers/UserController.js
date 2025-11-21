@@ -60,16 +60,17 @@ class UserController {
             const {id} = user
             const {name} = user
 
-             const token = jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: "7d"})
+             const accessToken = jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: "1m"})
+             const refreshToken = jwt.sign({id}, process.env.JWT_SECRET, {expiresIn:"7d"})
 
-            res.cookie("userToken", token, {
+            res.cookie("userToken", refreshToken, {
                 httpOnly:true, 
                 secure: false,
                 sameSite:"lax",
                 maxAge: 1000 * 60 * 60 * 24 * 7
             })
 
-            return res.status(200).json({data:{name:name}})
+            return res.status(200).json({data:{tokenAcess:accessToken, name:name}})
         }catch (err){
             console.log("Erro ao fazer login...")
         }
